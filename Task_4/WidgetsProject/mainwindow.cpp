@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->radioButton->setText("Position_1");
     ui->radioButton_2->setText("Position_2");
-    ui->pushButton->setCheckable(0); //сделал кнопку Toggle?
+    ui->pushButton->setCheckable(1); //сделал кнопку Toggle?
     ui->groupBox->setTitle("Position select");
     for(int iter = 0;iter<10;iter++){
         ui->comboBox->addItem(QString("Case %1").arg(iter));
@@ -27,8 +27,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked(bool checked)
 {
-    if(progress != 10) {progress++;}
-    else {progress = 0;}
+    if(progress != 10) {
+        progress++;
+    }
+    else {
+        progress = 0;
+    }
     ui->progressBar->setValue(progress);
 }
 
