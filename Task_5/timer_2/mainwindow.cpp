@@ -33,8 +33,8 @@ void MainWindow::onResetClicked() {
     ui->ql_Time->setText("00:00:00");
     ui->tb_LapsTime->clear();
     lapCount = 0;
-    stopwatch.reset();
-    ui->pb_Lap->setEnabled(false);
+    //stopwatch.reset();
+    //ui->pb_Lap->setEnabled(false);
 }
 
 void MainWindow::onLapClicked() {
@@ -43,10 +43,12 @@ void MainWindow::onLapClicked() {
 //    int lapTime = currentTime - previousTime;
     int lapTime = stopwatch.getLapTime();
     lapCount++;
-
-    QString lapText = QString("Круг %1, время: %2 сек")
+    int milliseconds = lapTime % 100;
+    int seconds = (lapTime / 1000);
+    QString lapText = QString("Круг %1, время: %2.%3 сек")
                           .arg(lapCount)
-                          .arg(lapTime / 1000);
+                          .arg(seconds)
+                          .arg(milliseconds);
     ui->tb_LapsTime->append(lapText);
 }
 
