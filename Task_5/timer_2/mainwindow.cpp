@@ -33,7 +33,9 @@ void MainWindow::onResetClicked() {
     ui->ql_Time->setText("00:00:00");
     ui->tb_LapsTime->clear();
     lapCount = 0;
-    //stopwatch.reset();
+    stopwatch.reset();
+    stopwatch.start();
+
     //ui->pb_Lap->setEnabled(false);
 }
 

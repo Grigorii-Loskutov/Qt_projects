@@ -46,9 +46,9 @@ int Stopwatch::getLapTime(){
     int time = getTime();
     lap_time = time - summ_time;
     summ_time = time;
-    qDebug() << "time = " << time;
-    qDebug() << "summ_time = " << summ_time;
-    qDebug() << "lap_time = " << lap_time;
+//    qDebug() << "time = " << time;
+//    qDebug() << "summ_time = " << summ_time;
+//    qDebug() << "lap_time = " << lap_time;
 
     return lap_time;
 }
