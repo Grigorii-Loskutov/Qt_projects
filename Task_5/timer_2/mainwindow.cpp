@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), lapCount(0) {
     ui->setupUi(this);
     ui->pb_Start_Stop->setCheckable(true);
+    ui->pb_Lap->setEnabled(false);
     connect(ui->pb_Start_Stop, &QPushButton::toggled, this, &MainWindow::onStartStopClicked);
     connect(ui->pb_Clear, &QPushButton::clicked, this, &MainWindow::onResetClicked);
     connect(ui->pb_Lap, &QPushButton::clicked, this, &MainWindow::onLapClicked);
@@ -20,9 +21,11 @@ void MainWindow::onStartStopClicked() {
     ui->ql_Time->setAlignment(Qt::AlignCenter);
     if (stopwatch.isRunning()) {
         ui->pb_Start_Stop->setText("Start");
+        ui->pb_Lap->setEnabled(false);
         stopwatch.stop();
     } else {
         ui->pb_Start_Stop->setText("Stop");
+        ui->pb_Lap->setEnabled(true);
         stopwatch.start();
     }
     ui->pb_Lap->setEnabled(stopwatch.isRunning());
@@ -33,8 +36,10 @@ void MainWindow::onResetClicked() {
     ui->ql_Time->setText("00:00:00");
     ui->tb_LapsTime->clear();
     lapCount = 0;
-    stopwatch.reset();
-    stopwatch.start();
+    if(stopwatch.isRunning()){
+        stopwatch.reset();
+        stopwatch.start();
+    }
 
     //ui->pb_Lap->setEnabled(false);
 }
