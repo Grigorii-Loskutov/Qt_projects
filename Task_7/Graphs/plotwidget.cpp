@@ -8,7 +8,7 @@ PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
     chart->addSeries(series);
     chart->createDefaultAxes();
     chart->setTitle("Processed Data");
-    chartView->setRenderHint(QPainter::Antialiasing);
+    //chartView->setRenderHint(QPainter::Antialiasing);
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(chartView);
     setLayout(layout);
