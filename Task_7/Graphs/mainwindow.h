@@ -16,6 +16,7 @@
 #include <QLineSeries>
 #include <QtCharts>
 #include <QChartView>
+//#include "plotwidget.h"
 
 #define FD 1000.0 //частота дискретизации
 
@@ -47,7 +48,7 @@ public:
 private slots:
     void on_pb_path_clicked();
     void on_pb_start_clicked();
-    void showGraphWindow(QVector<double> &data);
+    void showGraphWindow(const QVector<double> &data);
 
 
 private:
@@ -61,9 +62,10 @@ private:
     QLineSeries *series;
 
     QVector<double> plotData;
+    //PlotWidget *plotWidget;
 
 signals:
-   void sig_DataReady(QVector<double>& data);
+   void sig_DataReady(const QVector<double>& data);
 
 public slots:
 

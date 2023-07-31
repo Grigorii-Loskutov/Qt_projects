@@ -15,6 +15,7 @@ class PlotWidget  : public QWidget
 public:
     explicit PlotWidget(QWidget *parent = nullptr);
     void plotData(const QVector<double>& data);
+    ~PlotWidget();
 
 private:
     Ui::PlotWidget *ui;
@@ -22,5 +23,4 @@ private:
     QChartView *chartView;
     QLineSeries *series;
 };
-
 #endif // PLOTWIDGET_H

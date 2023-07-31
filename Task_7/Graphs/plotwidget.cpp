@@ -1,4 +1,6 @@
 #include "plotwidget.h"
+#include <QDebug>
+#include <algorithm>
 
 PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
 {
@@ -6,7 +8,8 @@ PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
     series = new QLineSeries;
     chartView = new QChartView(chart);
     chart->addSeries(series);
-    chart->createDefaultAxes();
+    //chart->createDefaultAxes();
+
     chart->setTitle("Processed Data");
     //chartView->setRenderHint(QPainter::Antialiasing);
     QVBoxLayout *layout = new QVBoxLayout;
@@ -15,11 +18,32 @@ PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
     chartView->show();
 }
 
+PlotWidget::~PlotWidget()
+{
+    delete this;
+}
+
 void PlotWidget::plotData(const QVector<double>& data)
 {
     series->clear();
+    QValueAxis *axisX = new QValueAxis();
+    axisX->setRange(0, data.size()); // Задаем минимальное и максимальное значение для оси X
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis();
+    double yMax = *std::max(data.begin(),data.end());
+    double yMin = *std::min(data.begin(),data.end());
+
+    axisY->setRange(yMin-0.1, yMax+0.1); // Задаем минимальное и максимальное значение для оси Y
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
     for (int i = 0; i < data.size(); ++i)
     {
         series->append(i, data.at(i));
+        //qDebug() << "point appended: " << data.at(i);
+
     }
+    //chartView->repaint();
+    //chartView->resize(chartView->size());
 }
