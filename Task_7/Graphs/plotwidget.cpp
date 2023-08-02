@@ -15,12 +15,14 @@ PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(chartView);
     setLayout(layout);
-    chartView->show();
 }
 
 PlotWidget::~PlotWidget()
 {
-    delete this;
+    delete chart;
+    delete series;
+    delete chartView;
+
 }
 
 void PlotWidget::plotData(const QVector<double>& data)
@@ -44,6 +46,7 @@ void PlotWidget::plotData(const QVector<double>& data)
         //qDebug() << "point appended: " << data.at(i);
 
     }
+    chartView->show();
     //chartView->repaint();
     //chartView->resize(chartView->size());
 }

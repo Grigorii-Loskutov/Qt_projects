@@ -246,7 +246,7 @@ void MainWindow::showGraphWindow(const QVector<double>& data)
     // Создаем объект PlotWidget и показываем окно с графиком
     PlotWidget *plotWidget = new PlotWidget;
     qDebug() << "Plot widget created";
-    plotWidget->setAttribute(Qt::WA_DeleteOnClose); // Очистка ресурсов при закрытии окна
+    //plotWidget->setAttribute(Qt::WA_DeleteOnClose); // Очистка ресурсов при закрытии окна
     plotWidget->plotData(data);
     plotWidget->setWindowTitle("Super Plot");
     plotWidget->setMinimumSize(1000,1000);
