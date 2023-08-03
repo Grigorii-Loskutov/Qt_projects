@@ -22,5 +22,7 @@ private:
     QChart *chart;
     QChartView *chartView;
     QLineSeries *series;
+    QValueAxis *axisX;
+    QValueAxis *axisY;
 };
 #endif // PLOTWIDGET_H

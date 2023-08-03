@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->pb_clearResult->setCheckable(true);
+    plotWidget = new PlotWidget(); //если поставить (this), то окно с графиком создастся прям внутри mainwindow, а потом программа завершится
     connect(this, &MainWindow::sig_DataReady, this, &MainWindow::showGraphWindow);
 
 }
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete plotWidget;
 }
 
 /****************************************************/
@@ -231,6 +233,7 @@ void MainWindow::on_pb_start_clicked()
 
                                                 emit sig_DataReady(plotData);
                                                 qDebug() << "Signal emited";
+                                                plotData.clear();
                                                 //MainWindow::showGraphWindow(plotData); //сигнал не прокидывался, поэтому вызвал построение графика тут
                                              };
 
@@ -244,8 +247,9 @@ void MainWindow::on_pb_start_clicked()
 void MainWindow::showGraphWindow(const QVector<double>& data)
 {
     // Создаем объект PlotWidget и показываем окно с графиком
-    PlotWidget *plotWidget = new PlotWidget;
+    //PlotWidget *plotWidget = new PlotWidget;
     qDebug() << "Plot widget created";
+    //plotWidget->close();
     //plotWidget->setAttribute(Qt::WA_DeleteOnClose); // Очистка ресурсов при закрытии окна
     plotWidget->plotData(data);
     plotWidget->setWindowTitle("Super Plot");
