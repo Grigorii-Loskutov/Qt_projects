@@ -34,6 +34,8 @@ private slots:
     void on_pb_request_clicked();
 
 
+    void on_pb_clear_clicked();
+
 signals:
     void sig_RequestToDb(QString request);
 

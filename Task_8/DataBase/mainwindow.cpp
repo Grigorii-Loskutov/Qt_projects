@@ -213,3 +213,12 @@ void MainWindow::ReceiveStatusRequestToDB(QSqlError err)
     }
 
 }
+
+void MainWindow::on_pb_clear_clicked()
+{
+    ui->tb_result->clear();
+    ui->tb_result->setColumnCount(0);
+    ui->tb_result->setRowCount(0);
+
+}
+
