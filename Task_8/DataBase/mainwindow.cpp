@@ -103,6 +103,31 @@ void MainWindow::on_pb_request_clicked()
 {
 
     ///Тут должен быть код ДЗ
+    int category = ui->cb_category->currentIndex();
+    switch (category) {
+    case 0:{
+        request = "SELECT title, description FROM film f "
+                              "JOIN film_category fc on f.film_id = fc.film_id "
+                              "JOIN category c on c.category_id = fc.category_id";
+        break;
+    }
+    case 1:{
+        request = "SELECT title, description FROM film f "
+                              "JOIN film_category fc on f.film_id = fc.film_id "
+                              "JOIN category c on c.category_id = fc.category_id "
+                              "WHERE c.name = 'Comedy'";
+        break;
+    }
+    case 2:{
+        request = "SELECT title, description FROM film f "
+                              "JOIN film_category fc on f.film_id = fc.film_id "
+                              "JOIN category c on c.category_id = fc.category_id "
+                              "WHERE c.name = 'Horror'";
+        break;
+    }
+    default:
+        break;
+    }
     auto req = [&]{dataBase->RequestToDB(request);};
     QtConcurrent::run(req);
     qDebug() << "Request has been sended";
@@ -120,11 +145,11 @@ void MainWindow::ScreenDataFromDB(const QTableWidget *widget, int typeRequest)
     qDebug() << "Screening data from DB";
 
     ///Тут должен быть код ДЗ
-    switch (typeRequest) {
+//    switch (typeRequest) {
 
-    case requestAllFilms:
-    case requestHorrors:
-    case requestComedy:{
+//    case requestAllFilms:
+//    case requestHorrors:
+//    case requestComedy:{
 
         ui->tb_result->setRowCount(widget->rowCount( ));
         ui->tb_result->setColumnCount(widget->columnCount( ));
@@ -142,12 +167,12 @@ void MainWindow::ScreenDataFromDB(const QTableWidget *widget, int typeRequest)
 
         ui->tb_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-        break;
+//        break;
 
-    }
-    default:
-        break;
-    }
+//    }
+//    default:
+//        break;
+//    }
 
 
 }
@@ -188,5 +213,3 @@ void MainWindow::ReceiveStatusRequestToDB(QSqlError err)
     }
 
 }
-
-

@@ -46,9 +46,14 @@ private:
     DataBase* dataBase;
     QMessageBox* msg;
 
-    QString request = "SELECT title, release_year, c.name  FROM film f "
+//    QString request = "SELECT title, release_year, c.name  FROM film f "
+//                      "JOIN film_category fc on f.film_id = fc.film_id "
+//                      "JOIN category c on c.category_id  = fc.category_id";
+
+    QString request = "SELECT title, description FROM film f "
                       "JOIN film_category fc on f.film_id = fc.film_id "
-                      "JOIN category c on c.category_id  = fc.category_id";
+                      "JOIN category c on c.category_id = fc.category_id";
+                      //"WHERE c.name = 'Comedy'";
 
 
 };

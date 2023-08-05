@@ -95,16 +95,16 @@ QSqlError DataBase::GetLastError()
 
 void DataBase::ReadAnswerFromDB(int requestType)
 {
-    switch (requestType) {
-    case requestAllFilms:
-    case requestComedy:
-    case requestHorrors:
-    {
+//    switch (requestType) {
+//    case requestAllFilms:
+//    case requestComedy:
+//    case requestHorrors:
+//    {
 
-        tableWidget->setColumnCount(3);
+        tableWidget->setColumnCount(2);
         tableWidget->setRowCount(0);
         QStringList hdrs;
-        hdrs << "Название" << "Год выпуска" << "Жанр";
+        hdrs << "Название фильма" << "Описание фильма";
         tableWidget->setHorizontalHeaderLabels(hdrs);
 
         uint32_t conterRows = 0;
@@ -125,11 +125,11 @@ void DataBase::ReadAnswerFromDB(int requestType)
 
         emit sig_SendDataFromDB(tableWidget, requestAllFilms);
 
-        break;
-    }
+//        break;
+//    }
 
-    default:
-        break;
-    }
+//    default:
+//        break;
+//    }
 
 }
