@@ -1,10 +1,12 @@
 #include "database.h"
-
+#include <QDebug>
 DataBase::DataBase(QObject *parent)
     : QObject{parent}
 {
 
     dataBase = new QSqlDatabase();
+    simpleQuery = new QSqlQuery();
+    tableWidget = new QTableWidget();
 
 
 }
@@ -69,6 +71,17 @@ void DataBase::RequestToDB(QString request)
 {
 
     ///Тут должен быть код ДЗ
+    qDebug() << "Trying request...";
+
+    *simpleQuery = QSqlQuery(*dataBase);
+    QSqlError err;
+    if(simpleQuery->exec(request) == false){
+           err = simpleQuery->lastError();
+       }
+
+    emit sig_SendStatusRequest(err);
+    qDebug() << "Status error has been emited";
+
 
 }
 
@@ -78,4 +91,45 @@ void DataBase::RequestToDB(QString request)
 QSqlError DataBase::GetLastError()
 {
     return dataBase->lastError();
+}
+
+void DataBase::ReadAnswerFromDB(int requestType)
+{
+    switch (requestType) {
+    case requestAllFilms:
+    case requestComedy:
+    case requestHorrors:
+    {
+
+        tableWidget->setColumnCount(3);
+        tableWidget->setRowCount(0);
+        QStringList hdrs;
+        hdrs << "Название" << "Год выпуска" << "Жанр";
+        tableWidget->setHorizontalHeaderLabels(hdrs);
+
+        uint32_t conterRows = 0;
+
+        while(simpleQuery->next()){
+            QString str;
+            tableWidget->insertRow(conterRows);
+
+            for(int i = 0; i<tableWidget->columnCount(); ++i){
+
+                str = simpleQuery->value(i).toString();
+                QTableWidgetItem *item = new QTableWidgetItem(str);
+                tableWidget->setItem(tableWidget->rowCount() - 1, i, item);
+
+            }
+            ++conterRows;
+        }
+
+        emit sig_SendDataFromDB(tableWidget, requestAllFilms);
+
+        break;
+    }
+
+    default:
+        break;
+    }
+
 }
