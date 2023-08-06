@@ -6,7 +6,6 @@ DataBase::DataBase(QObject *parent)
 {
 
     dataBase = new QSqlDatabase();
-    tableModel = new QSqlTableModel();
 
 }
 
@@ -47,6 +46,9 @@ void DataBase::ConnectToDataBase(QVector<QString> data)
 
     bool status;
     status = dataBase->open();
+    if (status){
+        tableModel = new QSqlTableModel(this, *dataBase);
+    }
     emit sig_SendStatusConnection(status);
 
 }
@@ -73,9 +75,14 @@ void DataBase::RequestToDB(QTableView* tb_result, const requestType filtr)
     tableModel->setTable("film");
     tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-    tableModel->select();
-    tableModel->setHeaderData(2, Qt::Horizontal, tr("Название"));
-    tableModel->setHeaderData(3, Qt::Horizontal, tr("Описание"));
+
+//    for (int col = 0; col < tableModel->columnCount(); ++col) {
+//        if (col != 1 && col != 2) { // Скрыть все столбцы, кроме второго и третьего
+//            tableModel->setColumnHidden(col, true);
+//        }
+//    }
+    tableModel->setHeaderData(1, Qt::Horizontal, tr("Название"));
+    tableModel->setHeaderData(2, Qt::Horizontal, tr("Описание"));
     switch (filtr){
 
     case requestAllFilms:
@@ -88,8 +95,14 @@ void DataBase::RequestToDB(QTableView* tb_result, const requestType filtr)
         tableModel->setFilter("c.name = 'Horror'");
         break;
     }
-
+    tableModel->select();
     tb_result->setModel(tableModel);
+    for (int col = 0; col < tableModel->columnCount(); ++col) {
+        if (col != 1 && col != 2) { // Скрыть все столбцы, кроме второго и третьего
+            tb_result->setColumnHidden(col, true);
+        }
+    }
+    tb_result->resizeColumnsToContents();
     qDebug() << "Request has been sended";
     qDebug() << "DataBase: " << tableModel->database();
     qDebug() << "Table: " << tableModel->tableName();

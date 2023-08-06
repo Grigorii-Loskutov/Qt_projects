@@ -158,6 +158,6 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
 
 void MainWindow::on_pb_clear_clicked()
 {
-    ui->tb_result->clearSpans();
+    ui->tb_result->setModel(nullptr);
 }
 
