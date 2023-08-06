@@ -95,41 +95,24 @@ QSqlError DataBase::GetLastError()
 
 void DataBase::ReadAnswerFromDB(int requestType)
 {
-//    switch (requestType) {
-//    case requestAllFilms:
-//    case requestComedy:
-//    case requestHorrors:
-//    {
 
-        tableWidget->setColumnCount(2);
-        tableWidget->setRowCount(0);
-        QStringList hdrs;
-        hdrs << "Название фильма" << "Описание фильма";
-        tableWidget->setHorizontalHeaderLabels(hdrs);
+    tableWidget->setColumnCount(2);
+    tableWidget->setRowCount(0);
+    uint32_t conterRows = 0;
 
-        uint32_t conterRows = 0;
+    while(simpleQuery->next()){
+        QString str;
+        tableWidget->insertRow(conterRows);
 
-        while(simpleQuery->next()){
-            QString str;
-            tableWidget->insertRow(conterRows);
+        for(int i = 0; i<tableWidget->columnCount(); ++i){
 
-            for(int i = 0; i<tableWidget->columnCount(); ++i){
+            str = simpleQuery->value(i).toString();
+            QTableWidgetItem *item = new QTableWidgetItem(str);
+            tableWidget->setItem(tableWidget->rowCount() - 1, i, item);
 
-                str = simpleQuery->value(i).toString();
-                QTableWidgetItem *item = new QTableWidgetItem(str);
-                tableWidget->setItem(tableWidget->rowCount() - 1, i, item);
-
-            }
-            ++conterRows;
         }
-
-        emit sig_SendDataFromDB(tableWidget, requestAllFilms);
-
-//        break;
-//    }
-
-//    default:
-//        break;
-//    }
+        ++conterRows;
+    }
+    emit sig_SendDataFromDB(tableWidget, requestAllFilms);
 
 }

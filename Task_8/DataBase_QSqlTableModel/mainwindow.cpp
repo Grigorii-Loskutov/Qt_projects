@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QStandardItemModel>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -38,13 +40,13 @@ MainWindow::MainWindow(QWidget *parent)
     /*
      * Соединяем сигнал, который передает ответ от БД с методом, который отображает ответ в ПИ
      */
-//     connect(dataBase, &DataBase::sig_SendDataFromDB, this, &MainWindow::ScreenDataFromDB);
+     connect(dataBase, &DataBase::sig_SendDataFromDB, this, &MainWindow::ScreenDataFromDB);
 
     /*
      *  Сигнал для подключения к БД
      */
     connect(dataBase, &DataBase::sig_SendStatusConnection, this, &MainWindow::ReceiveStatusConnectionToDB);
-
+    connect(dataBase, &DataBase::sig_SendStatusRequest, this, &MainWindow::ReceiveStatusRequestToDB);
 }
 
 MainWindow::~MainWindow()
@@ -127,8 +129,28 @@ void MainWindow::ScreenDataFromDB(const QTableWidget *widget, int typeRequest)
 {
 
     ///Тут должен быть код ДЗ
+    qDebug() << "Screening data from DB";
 
-
+        ///Тут должен быть код ДЗ
+    QStringList hdrs;
+    QStandardItemModel* model = new QStandardItemModel(widget->rowCount(), widget->columnCount(), this);
+    model->setHeaderData(0, Qt::Horizontal, "Название"); // Замените "Column 1" на ваш текст заголовка столбца 1
+    model->setHeaderData(1, Qt::Horizontal, "Описание"); // Замените "Column 2" на ваш текст заголовка столбца 2
+    model->setRowCount(widget->rowCount( ));
+    model->setColumnCount(widget->columnCount( ));
+    int rowCount = widget->rowCount();
+    int columnCount = widget->columnCount();
+    for (int row = 0; row < rowCount; ++row) {
+        for (int column = 0; column < columnCount; ++column) {
+            QTableWidgetItem* item = widget->item(row, column);
+            if (item) {
+                model->setItem(row, column, new QStandardItem(item->text()));
+                qDebug() << item;
+            }
+        }
+    }
+    ui->tb_result->setModel(model);
+    ui->tb_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 /*!
  * \brief Метод изменяет стотояние формы в зависимости от статуса подключения к БД
@@ -153,6 +175,20 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
 
 }
 
+void MainWindow::ReceiveStatusRequestToDB(QSqlError err)
+{
+
+    if(err.type() != QSqlError::NoError){
+        msg->setText(err.text());
+        msg->exec();
+    }
+    else{
+
+        dataBase->ReadAnswerFromDB(requestAllFilms);
+
+    }
+
+}
 
 
 

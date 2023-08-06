@@ -6,6 +6,9 @@ DataBase::DataBase(QObject *parent)
 {
 
     dataBase = new QSqlDatabase();
+    simpleQuery = new QSqlQuery();
+    tableWidget = new QTableWidget();
+
 
 }
 
@@ -83,30 +86,40 @@ void DataBase::RequestToDB(QTableView* tb_result, const requestType filtr)
 //    }
     tableModel->setHeaderData(1, Qt::Horizontal, tr("Название"));
     tableModel->setHeaderData(2, Qt::Horizontal, tr("Описание"));
-    switch (filtr){
+    if (filtr == requestAllFilms) {
 
-    case requestAllFilms:
-       tableModel->setFilter("");
-       break;
-    case requestComedy:
-        tableModel->setFilter("c.name = 'Comedy'");
-        break;
-    case requestHorrors:
-        tableModel->setFilter("c.name = 'Horror'");
-        break;
-    }
-    tableModel->select();
-    tb_result->setModel(tableModel);
-    for (int col = 0; col < tableModel->columnCount(); ++col) {
-        if (col != 1 && col != 2) { // Скрыть все столбцы, кроме второго и третьего
-            tb_result->setColumnHidden(col, true);
+        tableModel->select();
+        tb_result->setModel(tableModel);
+        for (int col = 0; col < tableModel->columnCount(); ++col) {
+            if (col != 1 && col != 2) { // Скрыть все столбцы, кроме второго и третьего
+                tb_result->setColumnHidden(col, true);
+            }
         }
+        tb_result->resizeColumnsToContents();
+        qDebug() << "Request has been sended";
+        qDebug() << "DataBase: " << tableModel->database();
+        qDebug() << "Table: " << tableModel->tableName();
     }
-    tb_result->resizeColumnsToContents();
-    qDebug() << "Request has been sended";
-    qDebug() << "DataBase: " << tableModel->database();
-    qDebug() << "Table: " << tableModel->tableName();
+    else {
+        QString request = "SELECT title, description FROM film f "
+                                      "JOIN film_category fc on f.film_id = fc.film_id "
+                                      "JOIN category c on c.category_id = fc.category_id ";
 
+        if  (filtr == requestComedy) {
+            request = request + " WHERE c.name = 'Comedy'";
+        }
+        else {
+            request = request + " WHERE c.name = 'Horror'";
+        }
+        *simpleQuery = QSqlQuery(*dataBase);
+         QSqlError err;
+         if(simpleQuery->exec(request) == false){
+                err = simpleQuery->lastError();
+            }
+
+         emit sig_SendStatusRequest(err);
+         qDebug() << "Status error has been emited";
+    }
 }
 
 /*!
@@ -115,4 +128,33 @@ void DataBase::RequestToDB(QTableView* tb_result, const requestType filtr)
 QSqlError DataBase::GetLastError()
 {
     return dataBase->lastError();
+}
+void DataBase::ReadAnswerFromDB(int requestType)
+{
+
+    tableWidget->setColumnCount(2);
+    tableWidget->setRowCount(0);
+    QStringList hdrs;
+    hdrs << "Название фильма" << "Описание фильма";
+    tableWidget->setHorizontalHeaderLabels(hdrs);
+
+    uint32_t conterRows = 0;
+
+    while(simpleQuery->next()){
+        QString str;
+        tableWidget->insertRow(conterRows);
+
+        for(int i = 0; i<tableWidget->columnCount(); ++i){
+
+            str = simpleQuery->value(i).toString();
+            QTableWidgetItem *item = new QTableWidgetItem(str);
+            tableWidget->setItem(tableWidget->rowCount() - 1, i, item);
+            qDebug() << item;
+
+        }
+        ++conterRows;
+    }
+
+    emit sig_SendDataFromDB(tableWidget, requestAllFilms);
+    qDebug() << "SendDataFromDB has been emited";
 }
