@@ -8,8 +8,6 @@ PlotWidget::PlotWidget(QWidget *parent) : QWidget(parent)
     series = new QLineSeries(this);
     chartView = new QChartView(chart);
     chart->addSeries(series);
-    axisX = new QValueAxis(this);
-    axisY = new QValueAxis(this);
 
     //chart->createDefaultAxes();  //не подходит
 
@@ -33,6 +31,10 @@ PlotWidget::~PlotWidget()
 void PlotWidget::plotData(const QVector<double>& data)
 {
     series->clear();
+
+    axisX = new QValueAxis(this);
+    axisY = new QValueAxis(this);
+
     axisX->setRange(0, data.size()); // Задаем минимальное и максимальное значение для оси X
     chart->addAxis(axisX, Qt::AlignBottom);
 
@@ -49,4 +51,5 @@ void PlotWidget::plotData(const QVector<double>& data)
         //qDebug() << "point appended: " << data.at(i);
 
     }
+    chartView->chart()->createDefaultAxes();
 }
