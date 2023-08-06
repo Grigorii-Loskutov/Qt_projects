@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,13 +38,12 @@ MainWindow::MainWindow(QWidget *parent)
     /*
      * Соединяем сигнал, который передает ответ от БД с методом, который отображает ответ в ПИ
      */
-     connect(dataBase, &DataBase::sig_SendDataFromDB, this, &MainWindow::ScreenDataFromDB);
+//     connect(dataBase, &DataBase::sig_SendDataFromDB, this, &MainWindow::ScreenDataFromDB);
 
     /*
      *  Сигнал для подключения к БД
      */
     connect(dataBase, &DataBase::sig_SendStatusConnection, this, &MainWindow::ReceiveStatusConnectionToDB);
-    connect(dataBase, &DataBase::sig_SendStatusRequest, this, &MainWindow::ReceiveStatusRequestToDB);    //?
 
 }
 
@@ -101,37 +99,22 @@ void MainWindow::on_act_connect_triggered()
  */
 void MainWindow::on_pb_request_clicked()
 {
-
-    ///Тут должен быть код ДЗ
-    int category = ui->cb_category->currentIndex();
-    switch (category) {
-    case 0:{
-        request = "SELECT title, description FROM film f "
-                              "JOIN film_category fc on f.film_id = fc.film_id "
-                              "JOIN category c on c.category_id = fc.category_id";
+    requestType req = requestAllFilms;
+    switch(ui->cb_category->currentIndex()){
+    case 0:
+        req = requestAllFilms;
         break;
-    }
-    case 1:{
-        request = "SELECT title, description FROM film f "
-                              "JOIN film_category fc on f.film_id = fc.film_id "
-                              "JOIN category c on c.category_id = fc.category_id "
-                              "WHERE c.name = 'Comedy'";
+    case 1:
+        req = requestComedy;
         break;
-    }
-    case 2:{
-        request = "SELECT title, description FROM film f "
-                              "JOIN film_category fc on f.film_id = fc.film_id "
-                              "JOIN category c on c.category_id = fc.category_id "
-                              "WHERE c.name = 'Horror'";
+    case 2:
+        req = requestHorrors;
         break;
-    }
     default:
         break;
     }
-    auto req = [&]{dataBase->RequestToDB(request);};
-    QtConcurrent::run(req);
-    qDebug() << "Request has been sended";
-
+    ///Тут должен быть код ДЗ
+     dataBase->RequestToDB(ui->tb_result, req);
 
 }
 
@@ -142,37 +125,8 @@ void MainWindow::on_pb_request_clicked()
  */
 void MainWindow::ScreenDataFromDB(const QTableWidget *widget, int typeRequest)
 {
-    qDebug() << "Screening data from DB";
 
     ///Тут должен быть код ДЗ
-//    switch (typeRequest) {
-
-//    case requestAllFilms:
-//    case requestHorrors:
-//    case requestComedy:{
-
-        ui->tb_result->setRowCount(widget->rowCount( ));
-        ui->tb_result->setColumnCount(widget->columnCount( ));
-        QStringList hdrs;
-        for(int i = 0; i < widget->columnCount(); ++i){
-            hdrs << widget->horizontalHeaderItem(i)->text();
-        }
-        ui->tb_result->setHorizontalHeaderLabels(hdrs);
-
-        for(int i = 0; i<widget->rowCount(); ++i){
-            for(int j = 0; j<widget->columnCount(); ++j){
-                ui->tb_result->setItem(i,j, widget->item(i,j)->clone());
-            }
-        }
-
-        ui->tb_result->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-//        break;
-
-//    }
-//    default:
-//        break;
-//    }
 
 
 }
@@ -199,26 +153,11 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
 
 }
 
-void MainWindow::ReceiveStatusRequestToDB(QSqlError err)
-{
 
-    if(err.type() != QSqlError::NoError){
-        msg->setText(err.text());
-        msg->exec();
-    }
-    else{
 
-        dataBase->ReadAnswerFromDB(requestAllFilms);
-
-    }
-
-}
 
 void MainWindow::on_pb_clear_clicked()
 {
-    ui->tb_result->clear();
-    ui->tb_result->setColumnCount(0);
-    ui->tb_result->setRowCount(0);
-
+    ui->tb_result->clearSpans();
 }
 
