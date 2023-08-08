@@ -17,7 +17,7 @@ void UDPworker::InitSocket()
     serviceUdpSocket = new QUdpSocket(this);
     /*
      * Соединяем присваиваем адрес и порт серверу и соединяем функцию
-     * обраотчик принятых пакетов с сокетом
+     * обработчик принятых пакетов с сокетом
      */
     serviceUdpSocket->bind(QHostAddress::LocalHost, BIND_PORT);
 
@@ -36,10 +36,11 @@ void UDPworker::ReadDatagram(QNetworkDatagram datagram)
 
 
     QDataStream inStr(&data, QIODevice::ReadOnly);
-    QDateTime dateTime;
-    inStr >> dateTime;
+    //QDateTime dateTime;
+    QString strData;
+    inStr >> strData;
 
-    emit sig_sendTimeToGUI(dateTime);
+    emit sig_sendDataToGUI(strData);
 }
 /*!
  * @brief Метод осуществляет опередачу датаграммы

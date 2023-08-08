@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     udpWorker = new UDPworker(this);
     udpWorker->InitSocket();
 
-    connect(udpWorker, &UDPworker::sig_sendTimeToGUI, this, &MainWindow::DisplayTime);
-
+    connect(udpWorker, &UDPworker::sig_sendDataToGUI, this, &MainWindow::DisplayRecieveData);
+    /*
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [&]{
 
@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
         timer->start(TIMER_DELAY);
 
     });
+    */
 
 }
 
@@ -37,12 +38,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pb_start_clicked()
 {
-    timer->start(TIMER_DELAY);
+    //timer->start(TIMER_DELAY);
+    QByteArray dataToSend;
+    QDataStream outStr(&dataToSend, QIODevice::WriteOnly);
+    QString strToSend;
+    strToSend = ui->te_send->toPlainText();
+    outStr << strToSend;
+
+    udpWorker->SendDatagram(dataToSend);
 }
 
 
-void MainWindow::DisplayTime(QDateTime data)
+void MainWindow::DisplayRecieveData(QString data)
 {
+    /*
     counterPck++;
     if(counterPck % 20 == 0){
         ui->te_result->clear();
@@ -50,13 +59,15 @@ void MainWindow::DisplayTime(QDateTime data)
 
     ui->te_result->append("Текущее время: " + data.toString() + ". "
                 "Принято пакетов " + QString::number(counterPck));
+    */
+    ui->te_result->append("Принято сообщение: <получить адрес>" + data + ", размер сообщения: " + "<размер пакета>");
 
 
 }
 
-
+/*
 void MainWindow::on_pb_stop_clicked()
 {
     timer->stop();
 }
-
+*/
