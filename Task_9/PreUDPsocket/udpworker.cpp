@@ -35,12 +35,13 @@ void UDPworker::ReadDatagram(QNetworkDatagram datagram)
     QHostAddress senderAddr;
     int size;
     data = datagram.data();
+    size = data.size();
     senderAddr = datagram.senderAddress();
-    size = sizeof(datagram.data());
 
     QDataStream inStr(&data, QIODevice::ReadOnly);
     QString strRecieveData;
     inStr >> strRecieveData;
+
 
     QString strSenderAddr;
     strSenderAddr = senderAddr.toString();
