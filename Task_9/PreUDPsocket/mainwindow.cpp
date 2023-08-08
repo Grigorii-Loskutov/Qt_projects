@@ -49,7 +49,7 @@ void MainWindow::on_pb_start_clicked()
 }
 
 
-void MainWindow::DisplayRecieveData(QString data)
+void MainWindow::DisplayRecieveData(QString data, QString senderAddr, int size)
 {
     /*
     counterPck++;
@@ -60,7 +60,7 @@ void MainWindow::DisplayRecieveData(QString data)
     ui->te_result->append("Текущее время: " + data.toString() + ". "
                 "Принято пакетов " + QString::number(counterPck));
     */
-    ui->te_result->append("Принято сообщение: <получить адрес>" + data + ", размер сообщения: " + "<размер пакета>");
+    ui->te_result->append("Принято сообщение: "  + data + " от отправителя " + senderAddr + ", размер сообщения (байт): " + QString("%1").arg(size));
 
 
 }

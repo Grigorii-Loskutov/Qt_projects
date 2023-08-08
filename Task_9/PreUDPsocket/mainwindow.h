@@ -22,7 +22,7 @@ public:
 private slots:
     void on_pb_start_clicked();
     //void DisplayTime(QDateTime data);
-    void DisplayRecieveData(QString data);
+    void DisplayRecieveData(QString data, QString senderAddr, int size);
     //void on_pb_stop_clicked();
 
 private:

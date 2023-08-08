@@ -32,15 +32,20 @@ void UDPworker::ReadDatagram(QNetworkDatagram datagram)
 {
 
     QByteArray data;
+    QHostAddress senderAddr;
+    int size;
     data = datagram.data();
-
+    senderAddr = datagram.senderAddress();
+    size = sizeof(datagram.data());
 
     QDataStream inStr(&data, QIODevice::ReadOnly);
-    //QDateTime dateTime;
-    QString strData;
-    inStr >> strData;
+    QString strRecieveData;
+    inStr >> strRecieveData;
 
-    emit sig_sendDataToGUI(strData);
+    QString strSenderAddr;
+    strSenderAddr = senderAddr.toString();
+
+    emit sig_sendDataToGUI(strRecieveData, strSenderAddr, size);
 }
 /*!
  * @brief Метод осуществляет опередачу датаграммы
