@@ -25,8 +25,8 @@ private:
     QUdpSocket* serviceUdpSocket;
 
 signals:
-    //void sig_sendTimeToGUI(QDateTime data);
-     void sig_sendDataToGUI(QString data, QString senderAddr, int size);
+    void sig_sendDataToGUI(QString data, QString senderAddr, int size);
+    void sig_sendTimeToGUI(QDateTime data);
 
 };
 

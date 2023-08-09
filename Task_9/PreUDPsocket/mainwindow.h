@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <QTimer>
+#include <QTimer>
 #include "UdpWorker.h"
 
 #define TIMER_DELAY 1000
@@ -21,15 +21,17 @@ public:
 
 private slots:
     void on_pb_start_clicked();
-    //void DisplayTime(QDateTime data);
+    void DisplayTime(QDateTime data);
     void DisplayRecieveData(QString data, QString senderAddr, int size);
-    //void on_pb_stop_clicked();
+    void on_pb_stop_clicked();
+
+    void on_pb_send_clicked();
 
 private:
     Ui::MainWindow *ui;
-    //QTimer* timer;
+    QTimer* timer;
     UDPworker* udpWorker;
-    //uint32_t counterPck = 0;
+    uint32_t counterPck = 0;
 
 
 
