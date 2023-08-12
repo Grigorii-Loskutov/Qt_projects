@@ -26,6 +26,29 @@ QDataStream &operator <<(QDataStream &in, ServiceHeader &data){
 };
 
 
+QDataStream &operator >>(QDataStream &out, StatServer &data){
+
+    out >> data.incBytes;
+    out >> data.sendBytes;
+    out >> data.revPck;
+    out >> data.sendPck;
+    out >> data.workTime;
+    out >> data.clients;
+    return out;
+};
+
+QDataStream &operator <<(QDataStream &in, StatServer &data){
+
+    in << data.incBytes;
+    in << data.sendBytes;
+    in << data.revPck;
+    in << data.sendPck;
+    in << data.workTime;
+    in << data.clients;
+    return in;
+};
+
+
 
 /*
  * Поскольку мы являемся клиентом, инициализацию сокета
@@ -175,9 +198,16 @@ void TCPclient::ProcessingData(ServiceHeader header, QDataStream &stream)
             QDateTime time;
             stream >> time;
             emit sig_sendTime(time);
+            break;
         }
         case GET_SIZE:
         case GET_STAT:
+        {
+            StatServer stat;
+            stream >> stat;
+            emit sig_sendStat(stat);
+            break;
+        }
         case SET_DATA:
         case CLEAR_DATA:
         default:

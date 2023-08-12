@@ -37,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
   * Соединяем сигналы со слотами
  */
     connect(client, &TCPclient::sig_connectStatus, this, &MainWindow::DisplayConnectStatus);
+    connect(client, &TCPclient::sig_sendTime, this, &MainWindow::DisplayTime);
+    connect(client, &TCPclient::sig_sendStat, this, &MainWindow::DisplayStat);
+
 }
 
 MainWindow::~MainWindow()
@@ -49,7 +52,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::DisplayTime(QDateTime time)
 {
-
+    ui->tb_result->append(QString("Текущее время: %1").arg(time.toString()));
 }
 void MainWindow::DisplayFreeSpace(uint32_t freeSpace)
 {
@@ -61,6 +64,14 @@ void MainWindow::SetDataReply(QString replyString)
 }
 void MainWindow::DisplayStat(StatServer stat)
 {
+
+    ui->tb_result->append("Статистика сервера:");
+    ui->tb_result->append("Принято байт: " + QString::number(stat.incBytes) + " байт");
+    ui->tb_result->append("Передано байт: " + QString::number(stat.sendBytes) + " байт");
+    ui->tb_result->append("Принято пакетов: " + QString::number(stat.revPck) + " шт.");
+    ui->tb_result->append("Передано пакетов: " + QString::number(stat.sendPck) + " шт.");
+    ui->tb_result->append("Время работы сервера: " + QString::number(stat.workTime) + " c");
+    ui->tb_result->append("Количество подключенных клиентов: " + QString::number(stat.clients) + " шт.");
 
 }
 void MainWindow::DisplayError(uint16_t error)
@@ -152,10 +163,15 @@ void MainWindow::on_pb_request_clicked()
 
        //Получить время
        case 0:
+            header.idData = GET_TIME;
+            break;
        //Получить свободное место
        case 1:
+
        //Получить статистику
        case 2:
+           header.idData = GET_STAT;
+           break;
        //Отправить данные
        case 3:
        //Очистить память на сервере
