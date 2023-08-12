@@ -167,6 +167,7 @@ void MainWindow::on_pb_request_clicked()
             break;
        //Получить свободное место
        case 1:
+            break;
 
        //Получить статистику
        case 2:
