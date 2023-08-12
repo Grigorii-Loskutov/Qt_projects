@@ -23,7 +23,7 @@ public:
 
 private slots:
 
-    void ReadyReed(void);
+    void ReadyRead(void);
     void ProcessingData(ServiceHeader header, QDataStream &stream);
 
 private:

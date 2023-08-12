@@ -34,7 +34,15 @@ QDataStream &operator <<(QDataStream &in, ServiceHeader &data){
 */
 TCPclient::TCPclient(QObject *parent) : QObject(parent)
 {
-
+    socket = new QTcpSocket(this);
+    connect(socket, &QTcpSocket::readyRead, this, &TCPclient::ReadyRead);
+    connect(socket, &QTcpSocket::connected, this, [&]{
+        emit sig_connectStatus(STATUS_SUCCES);
+    });
+    connect(socket, &QTcpSocket::errorOccurred, this, [&]{
+        emit sig_connectStatus(ERR_CONNECT_TO_HOST);
+    });
+    connect(socket, &QTcpSocket::disconnected, this, &TCPclient::sig_Disconnected);
 }
 
 /* write
@@ -43,7 +51,12 @@ TCPclient::TCPclient(QObject *parent) : QObject(parent)
 */
 void TCPclient::SendRequest(ServiceHeader head)
 {
+    QByteArray sendHdr;
+    QDataStream outStr(&sendHdr, QIODevice::WriteOnly);
 
+    outStr << head;
+
+    socket->write(sendHdr);
 
 }
 
@@ -52,7 +65,13 @@ void TCPclient::SendRequest(ServiceHeader head)
 */
 void TCPclient::SendData(ServiceHeader head, QString str)
 {
+    QByteArray sendData;
+    QDataStream outStr(&sendData, QIODevice::WriteOnly);
 
+    outStr << head;
+    outStr << str;
+
+    socket->write(sendData);
 
 }
 
@@ -61,6 +80,12 @@ void TCPclient::SendData(ServiceHeader head, QString str)
  */
 void TCPclient::ConnectToHost(QHostAddress host, uint16_t port)
 {
+    socket->connectToHost(host, port);
+    if (socket->waitForConnected()) {
+        emit sig_connectStatus(StatusMessages::STATUS_SUCCES);
+    } else {
+        emit sig_connectStatus(StatusMessages::ERR_CONNECT_TO_HOST);  // Signal connection failed
+    }
 
 }
 /*
@@ -69,10 +94,13 @@ void TCPclient::ConnectToHost(QHostAddress host, uint16_t port)
 void TCPclient::DisconnectFromHost()
 {
 
+    socket->disconnectFromHost();
+    socket->waitForDisconnected(3000);
+
 }
 
 
-void TCPclient::ReadyReed()
+void TCPclient::ReadyRead()
 {
 
     QDataStream incStream(socket);
@@ -143,6 +171,11 @@ void TCPclient::ProcessingData(ServiceHeader header, QDataStream &stream)
     switch (header.idData){
 
         case GET_TIME:
+        {
+            QDateTime time;
+            stream >> time;
+            emit sig_sendTime(time);
+        }
         case GET_SIZE:
         case GET_STAT:
         case SET_DATA:

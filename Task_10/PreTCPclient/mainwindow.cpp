@@ -36,8 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
  /*
   * Соединяем сигналы со слотами
  */
-
-
+    connect(client, &TCPclient::sig_connectStatus, this, &MainWindow::DisplayConnectStatus);
 }
 
 MainWindow::~MainWindow()
@@ -122,9 +121,9 @@ void MainWindow::on_pb_connect_clicked()
         uint16_t port = ui->spB_port->value();
 
         QString ip = ui->spB_ip4->text() + "." +
-                     ui->spB_ip4->text() + "." +
-                     ui->spB_ip4->text() + "." +
-                     ui->spB_ip4->text();
+                     ui->spB_ip3->text() + "." +
+                     ui->spB_ip2->text() + "." +
+                     ui->spB_ip1->text();
 
         client->ConnectToHost(QHostAddress(ip), port);
 
