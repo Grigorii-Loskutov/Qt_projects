@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QStandardItemModel>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -151,30 +152,58 @@ void MainWindow::on_pb_request_shedule_clicked()
     }
 
     db_answer = dataBase->RequestToDB(request);
+
+    //Данные из базы данных будем хранить в QStandardItemModel, т.к. нужен тип QVAriant
+    QStandardItemModel* model = new QStandardItemModel(this);
+
+    //Заполним таблицу значениямииз БД
+    int rowCount = db_answer->rowCount();
+    int columnCount = db_answer->columnCount();
+    for (int row = 0; row < rowCount; ++row) {
+        QList<QStandardItem*> rowItems;
+        for (int column = 0; column < columnCount; ++column) {
+            QVariant cellData = db_answer->data(db_answer->index(row, column));
+            QStandardItem *item = new QStandardItem();
+            item->setData(cellData, Qt::DisplayRole);
+            rowItems.append(item);
+        }
+        model->appendRow(rowItems);
+    }
+    //Зададим заголовки таблиц
     if (ui->rb_arrival->isChecked() == true){
-        db_answer->setHeaderData(0, Qt::Horizontal, tr("Номер рейса"));
-        db_answer->setHeaderData(1, Qt::Horizontal, tr("Время вылета"));
-        db_answer->setHeaderData(2, Qt::Horizontal, tr("Аэропорт отправления"));
+        model->setHeaderData(0, Qt::Horizontal, tr("Номер рейса"));
+        model->setHeaderData(1, Qt::Horizontal, tr("Время вылета"));
+        model->setHeaderData(2, Qt::Horizontal, tr("Аэропорт отправления"));
     }
     else {
-        db_answer->setHeaderData(0, Qt::Horizontal, tr("Номер рейса"));
-        db_answer->setHeaderData(1, Qt::Horizontal, tr("Время вылета"));
-        db_answer->setHeaderData(2, Qt::Horizontal, tr("Аэропорт назначения"));
-
+        model->setHeaderData(0, Qt::Horizontal, tr("Номер рейса"));
+        model->setHeaderData(1, Qt::Horizontal, tr("Время вылета"));
+        model->setHeaderData(2, Qt::Horizontal, tr("Аэропорт назначения"));
     }
-    ui->tv_AirPortsTable->setModel(db_answer);
-    for (int row; row < db_answer->rowCount(); ++row){
-        QModelIndex cellIndex = db_answer->index(row, 1);
-        qDebug() << "Cell Index: " << cellIndex;
-        QVariant cellData = db_answer->data(cellIndex);
-        qDebug() << "Cell data: " << cellData;
+
+    //Т.к. по ТЗ требуется отображать только время, поэтому уберем дату из первого столбца
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QModelIndex cellIndex = model->index(row, 1);
+        //qDebug() << "Cell Index: " << cellIndex;
+        QVariant cellData = model->data(cellIndex);
+        //qDebug() << "Cell data: " << cellData;
         QTime cellTime = cellData.toTime();
-        qDebug() << "Cell time: " << cellData.toTime();
-        db_answer->setData(cellIndex, cellTime);
-        qDebug() << db_answer->data(cellIndex);
+        //qDebug() << "Cell time: " << cellData.toTime();
+        model->setData(cellIndex, cellTime);
+        //qDebug() << model->data(cellIndex);
     }
-    ui->tv_AirPortsTable->setModel(db_answer);
-    ui->tv_AirPortsTable->resizeColumnsToContents();
 
+    //Сделаем выравнивание по центру
+    for (int row = 0; row < model->rowCount(); ++row) {
+        for (int column = 0; column < model->columnCount(); ++column) {
+            QModelIndex index = model->index(row, column);
+            QStandardItem *item = model->itemFromIndex(index);
+            item->setTextAlignment(Qt::AlignCenter);
+        }
+    }
+
+    ui->tv_AirPortsTable->setModel(model);
+    ui->tv_AirPortsTable->setShowGrid(true);
+    ui->tv_AirPortsTable->resizeColumnsToContents();
 }
 
