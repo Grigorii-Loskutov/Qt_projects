@@ -3,8 +3,10 @@
 
 #include <QTableWidget>
 #include <QObject>
+#include <QSqlTableModel>
+#include <QSqlDatabase>
+#include <QSqlQueryModel>
 #include <QtSql>
-
 
 
 #define POSTGRE_DRIVER "QPSQL"
@@ -22,15 +24,6 @@ enum fieldsForConnect{
     port = 4
 };
 
-//Типы запросов
-enum requestType{
-
-    requestAllFilms = 1,
-    requestComedy   = 2,
-    requestHorrors  = 3
-
-};
-
 
 
 class DataBase : public QObject
@@ -43,8 +36,7 @@ public:
 
     void AddDataBase(QString driver, QString nameDB = "");
     void DisconnectFromDataBase(QString nameDb = "");
-    void RequestToDB(QString request);
-    void ReadAnswerFromDB( int answerType );
+    QSqlQueryModel* RequestToDB(const QString request);
     QSqlError GetLastError(void);
     void ConnectToDataBase(QVector<QString> dataForConnect);
 
@@ -57,14 +49,10 @@ signals:
 
 
 
-
 private:
 
     QSqlDatabase* dataBase;
-    QSqlQuery* simpleQuery;
-    QTableWidget* tableWidget;
-
-
+    QSqlQueryModel* queryModel;
 };
 
 #endif // DATABASE_H

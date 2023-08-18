@@ -8,3 +8,5 @@ Task_7/testData.adc
 Task_8/DataBase/CMakeLists.txt.user
 Task_8/DataBase/CMakeLists.txt.user
 09_UDPsocket/
+*.user
+*.user

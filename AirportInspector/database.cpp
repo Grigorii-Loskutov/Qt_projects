@@ -1,12 +1,12 @@
 #include "database.h"
-#include <QDebug>
+#include "qsqlerror.h"
+
 DataBase::DataBase(QObject *parent)
     : QObject{parent}
 {
 
     dataBase = new QSqlDatabase();
-    simpleQuery = new QSqlQuery();
-    tableWidget = new QTableWidget();
+
 
 
 }
@@ -36,18 +36,26 @@ void DataBase::AddDataBase(QString driver, QString nameDB)
 void DataBase::ConnectToDataBase(QVector<QString> data)
 {
 
-    dataBase->setHostName(data[hostName]);
-    dataBase->setDatabaseName(data[dbName]);
-    dataBase->setUserName(data[login]);
-    dataBase->setPassword(data[pass]);
-    dataBase->setPort(data[port].toInt());
+    /*ui->le_host->setText("981757-ca08998.tmweb.ru");
+    ui->le_dbName->setText("demo");
+    ui->le_login->setText("netology_usr_cpp");
+    ui->le_pass->setText("CppNeto3");
+    ui->spB_port->setValue(5432);*/
+    dataBase->setHostName("981757-ca08998.tmweb.ru");
+    dataBase->setDatabaseName("demo");
+    dataBase->setUserName("netology_usr_cpp");
+    dataBase->setPassword("CppNeto3");
+    dataBase->setPort(5432);
 
 
     ///Тут должен быть код ДЗ
 
 
     bool status;
-    status = dataBase->open( );
+    status = dataBase->open();
+    if (status){
+        queryModel = new QSqlQueryModel(this);
+    }
     emit sig_SendStatusConnection(status);
 
 }
@@ -67,22 +75,13 @@ void DataBase::DisconnectFromDataBase(QString nameDb)
  * \param request - SQL запрос
  * \return
  */
-void DataBase::RequestToDB(QString request)
+QSqlQueryModel* DataBase::RequestToDB(const QString request)
 {
 
-    ///Тут должен быть код ДЗ
-    qDebug() << "Trying request...";
-
-    *simpleQuery = QSqlQuery(*dataBase);
-    QSqlError err;
-    if(simpleQuery->exec(request) == false){
-           err = simpleQuery->lastError();
-       }
-
-    emit sig_SendStatusRequest(err);
-    qDebug() << "Status error has been emited";
-
-
+    queryModel->setQuery(request, *dataBase);
+    return queryModel;
+    qDebug() << queryModel->lastError();
+    qDebug() << queryModel->query().lastQuery();
 }
 
 /*!
@@ -91,28 +90,4 @@ void DataBase::RequestToDB(QString request)
 QSqlError DataBase::GetLastError()
 {
     return dataBase->lastError();
-}
-
-void DataBase::ReadAnswerFromDB(int requestType)
-{
-
-    tableWidget->setColumnCount(2);
-    tableWidget->setRowCount(0);
-    uint32_t conterRows = 0;
-
-    while(simpleQuery->next()){
-        QString str;
-        tableWidget->insertRow(conterRows);
-
-        for(int i = 0; i<tableWidget->columnCount(); ++i){
-
-            str = simpleQuery->value(i).toString();
-            QTableWidgetItem *item = new QTableWidgetItem(str);
-            tableWidget->setItem(tableWidget->rowCount() - 1, i, item);
-
-        }
-        ++conterRows;
-    }
-    emit sig_SendDataFromDB(tableWidget, requestAllFilms);
-
 }

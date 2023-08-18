@@ -21,9 +21,6 @@ set(PROJECT_SOURCES
         airportsloadwindow.h
         airportsloadwindow.cpp
         airportsloadwindow.ui
-        dbdata.h
-        dbdata.cpp
-        dbdata.ui
         database.h
         database.cpp
 )
