@@ -9,6 +9,7 @@
 #include <QDate>
 #include <QStandardItemModel>
 #include "database.h"
+#include "airportsloadwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +25,7 @@ public:
 
 public slots:
     void ReceiveStatusConnectionToDB(bool status);
+    void PlotWindowDestroyed();
 
 private slots:
 
@@ -79,6 +81,10 @@ private:
     QStandardItemModel* YearStats;
 
     QStandardItemModel* PerDayStats;
+
+    AirportsLoadWindow* PlotWindow;
+
+
 
 };
 #endif // MAINWINDOW_H

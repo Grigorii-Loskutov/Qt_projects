@@ -12,3 +12,14 @@ AirportsLoadWindow::~AirportsLoadWindow()
 {
     delete ui;
 }
+
+
+void AirportsLoadWindow::on_pb_close_clicked()
+{
+    close();
+}
+
+void  AirportsLoadWindow::closeEvent(QCloseEvent *event)
+{
+    emit destroyed();
+}

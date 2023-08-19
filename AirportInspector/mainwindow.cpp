@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    PlotWindow = new AirportsLoadWindow();
+
     ui->lb_statusConnect->setStyleSheet("color:red");
 
     reconnectTimer = new QTimer(this);
@@ -27,12 +29,21 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(dataBase, &DataBase::sig_SendStatusConnection, this, &MainWindow::ReceiveStatusConnectionToDB);
 
+    connect(PlotWindow, &AirportsLoadWindow::destroyed, this, &MainWindow::PlotWindowDestroyed); //ToDO: не работает при закрытии крестиком
+
     connectToDatabase();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete PlotWindow;
+}
+
+void MainWindow::PlotWindowDestroyed()
+{
+    qDebug() << "PlotWindow destr.";
+    setDisabled(false);
 }
 
 void MainWindow::connectToDatabase()
@@ -152,6 +163,9 @@ void MainWindow::on_pb_requestStats_clicked()
         PerDayStats->appendRow(rowItems);
     }
     ui->tv_AirPortsTable->setModel(PerDayStats);
+
+    PlotWindow->show();
+    setDisabled(true);
 
 }
 
