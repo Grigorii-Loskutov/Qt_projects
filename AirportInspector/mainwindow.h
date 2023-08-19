@@ -39,6 +39,11 @@ private slots:
 
     void connectToDatabase();
 
+signals:
+    void YearStatsReady(QStandardItemModel* YearStats);
+    void PerDayStatsReady(QStandardItemModel* PerDayStats);
+    void AirportName(QString AirPortName);
+
 private:
     Ui::MainWindow *ui;
     DataBase* dataBase;

@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(PlotWindow, &AirportsLoadWindow::destroyed, this, &MainWindow::PlotWindowDestroyed); //ToDO: не работает при закрытии крестиком
 
+    connect(this, &MainWindow::AirportName, PlotWindow, &AirportsLoadWindow::ReceiveAirportName);
+
     connectToDatabase();
 }
 
@@ -162,8 +164,8 @@ void MainWindow::on_pb_requestStats_clicked()
         }
         PerDayStats->appendRow(rowItems);
     }
-    ui->tv_AirPortsTable->setModel(PerDayStats);
-
+    //ui->tv_AirPortsTable->setModel(PerDayStats);
+    emit AirportName(ui->cb_AirportsList->currentText());
     PlotWindow->show();
     setDisabled(true);
 
