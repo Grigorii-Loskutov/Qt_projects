@@ -7,6 +7,7 @@
 #include <QSortFilterProxyModel>
 #include <QDateEdit>
 #include <QDate>
+#include <QStandardItemModel>
 #include "database.h"
 
 QT_BEGIN_NAMESPACE
@@ -26,13 +27,15 @@ public slots:
 
 private slots:
 
-    void on_pb_request_AirportsLis_clicked();
-
     void on_pb_requestStats_clicked();
 
     void on_dt_dateEnter_userDateChanged(const QDate &date);
 
     void on_pb_request_shedule_clicked();
+
+    void reconnectToDatabase();
+
+    void connectToDatabase();
 
 private:
     Ui::MainWindow *ui;
@@ -50,14 +53,15 @@ private:
 
     const QString YearStats_req = "SELECT count(flight_no), date_trunc('month', scheduled_departure) as \"Month\" from bookings.flights f "
                                     "WHERE (scheduled_departure::date > date('2016-08-31') and "
-                                    "scheduled_departure::date <= date('2017-08-31')) and ( departure_airport = "
-                                    "'airportCode' or arrival_airport = 'airportCode' ) "
-                                    "group by \"Month\"";
+                                    "scheduled_departure::date <= date('2017-08-31')) and ( departure_airport = ";
+                                    //"'airportCode' or arrival_airport = 'airportCode' ) "
+                                    //"group by \"Month\"";
+
     const QString PerDayStats_req = "SELECT count(flight_no), date_trunc('day', scheduled_departure) as \"Day\" from bookings.flights f "
                                         "WHERE(scheduled_departure::date > date('2016-08-31') and "
-                                        "scheduled_departure::date <= date('2017-08-31')) and ( departure_airport = "
-                                        "airportCode or arrival_airport = airportCode) "
-                                        "GROUP BY \"Day\"";
+                                        "scheduled_departure::date <= date('2017-08-31')) and ( departure_airport = ";
+                                    //    "airportCode or arrival_airport = airportCode) "
+                                    //    "GROUP BY \"Day\"";
 
     QSqlQueryModel* db_answer;
     QSortFilterProxyModel *proxyModel;
@@ -67,6 +71,14 @@ private:
     const QDate maxDate{2017, 9, 14}; // 2017-09-14
 
     QDate CurrentDate;
+
+    QTimer *reconnectTimer;
+
+    QStandardItemModel* model;
+
+    QStandardItemModel* YearStats;
+
+    QStandardItemModel* PerDayStats;
 
 };
 #endif // MAINWINDOW_H

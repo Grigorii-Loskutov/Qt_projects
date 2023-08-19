@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QStandardItemModel>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,7 +8,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->lb_statusConnect->setStyleSheet("color:red");
-    //ui->pb_request_shedule->setEnabled(false);
+
+    reconnectTimer = new QTimer(this);
+    reconnectTimer->setSingleShot(true); // Таймер выполнится только один раз
+    connect(reconnectTimer, &QTimer::timeout, this, &MainWindow::reconnectToDatabase);
 
     dataBase = new DataBase(this);
     msg = new QMessageBox(this);
@@ -24,12 +27,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(dataBase, &DataBase::sig_SendStatusConnection, this, &MainWindow::ReceiveStatusConnectionToDB);
 
-    //Подключение в конструкторе
+    connectToDatabase();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::connectToDatabase()
+{
     if(ui->lb_statusConnect->text() == "Отключено"){
 
        ui->lb_statusConnect->setText("Подключение");
        ui->lb_statusConnect->setStyleSheet("color : black");
-
 
        auto conn = [&]{dataBase->ConnectToDataBase(dataForConnect);};
        QtConcurrent::run(conn);
@@ -38,28 +49,25 @@ MainWindow::MainWindow(QWidget *parent)
     else{
         dataBase->DisconnectFromDataBase(DB_NAME);
         ui->lb_statusConnect->setText("Отключено");
-        ui->act_connect->setText("Подключиться");
         ui->lb_statusConnect->setStyleSheet("color:red");
         //ui->pb_request_shedule->setEnabled(false);
     }
-    //
 }
 
-MainWindow::~MainWindow()
+
+void MainWindow::reconnectToDatabase()
 {
-    delete ui;
+    connectToDatabase();
 }
 
 void MainWindow::ReceiveStatusConnectionToDB(bool status)
 {
     if(status){
-        ui->act_connect->setText("Отключиться");
+        ui->centralwidget->setEnabled(true);
         ui->lb_statusConnect->setText("Подключено к БД");
         ui->lb_statusConnect->setStyleSheet("color:green");
         db_answer = dataBase->RequestToDB(AirpotsList_req);
         proxyModel->setSourceModel(db_answer);
-        ui->rb_arrival->update();
-        ui->rb_departure->update();
         // Устанавливаем сортировку по определенному столбцу (например, столбец с индексом 1) по возрастанию
         proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive); // Настройка чувствительности к регистру
         proxyModel->setSortRole(Qt::DisplayRole); // Роль данных для сортировки
@@ -83,6 +91,7 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
         }
     }
     else{
+        ui->centralwidget->setEnabled(true);
         dataBase->DisconnectFromDataBase(DB_NAME);
         msg->setIcon(QMessageBox::Critical);
         msg->setText(dataBase->GetLastError().text());
@@ -90,14 +99,11 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
         ui->lb_statusConnect->setStyleSheet("color:red");
         msg->exec();
         ui->cb_AirportsList->setModel(nullptr);
+
+        // Запустить таймер на повторное подключение через 5 секунд
+        reconnectTimer->start(5000);
+
     }
-
-}
-
-
-void MainWindow::on_pb_request_AirportsLis_clicked()
-{
-
 
 }
 
@@ -112,6 +118,41 @@ void MainWindow::on_pb_requestStats_clicked()
     } else {
         qDebug() << "Airport code" << keyToSearch << "not found in the map.";
     }
+    QString airportCode = airportMap.value(keyToSearch);
+    request = YearStats_req + "'" + airportCode + "'" +" or arrival_airport = '" + airportCode +"') " + "group by \"Month\"";
+
+    db_answer = dataBase->RequestToDB(request);
+    YearStats = new QStandardItemModel(this);
+    int rowCount = db_answer->rowCount();
+    int columnCount = db_answer->columnCount();
+    for (int row = 0; row < rowCount; ++row) {
+        QList<QStandardItem*> rowItems;
+        for (int column = 0; column < columnCount; ++column) {
+            QVariant cellData = db_answer->data(db_answer->index(row, column));
+            QStandardItem *item = new QStandardItem();
+            item->setData(cellData, Qt::DisplayRole);
+            rowItems.append(item);
+        }
+        YearStats->appendRow(rowItems);
+    }
+
+    request = PerDayStats_req + "'" + airportCode + "'" +" or arrival_airport = '" + airportCode +"') " + "group by \"Day\"";
+    db_answer = dataBase->RequestToDB(request);
+    PerDayStats = new QStandardItemModel(this);
+    rowCount = db_answer->rowCount();
+    columnCount = db_answer->columnCount();
+    for (int row = 0; row < rowCount; ++row) {
+        QList<QStandardItem*> rowItems;
+        for (int column = 0; column < columnCount; ++column) {
+            QVariant cellData = db_answer->data(db_answer->index(row, column));
+            QStandardItem *item = new QStandardItem();
+            item->setData(cellData, Qt::DisplayRole);
+            rowItems.append(item);
+        }
+        PerDayStats->appendRow(rowItems);
+    }
+    ui->tv_AirPortsTable->setModel(PerDayStats);
+
 }
 
 
@@ -154,7 +195,7 @@ void MainWindow::on_pb_request_shedule_clicked()
     db_answer = dataBase->RequestToDB(request);
 
     //Данные из базы данных будем хранить в QStandardItemModel, т.к. нужен тип QVAriant
-    QStandardItemModel* model = new QStandardItemModel(this);
+    model = new QStandardItemModel(this);
 
     //Заполним таблицу значениямииз БД
     int rowCount = db_answer->rowCount();

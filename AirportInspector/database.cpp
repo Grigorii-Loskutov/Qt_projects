@@ -79,9 +79,10 @@ QSqlQueryModel* DataBase::RequestToDB(const QString request)
 {
 
     queryModel->setQuery(request, *dataBase);
-    return queryModel;
     qDebug() << queryModel->lastError();
     qDebug() << queryModel->query().lastQuery();
+    return queryModel;
+
 }
 
 /*!
