@@ -30,11 +30,22 @@ public slots:
 
 private:
     Ui::AirportsLoadWindow *ui;
-    QChart *chart;
-    QChartView *chartView;
-    QLineSeries *series;
+    QChart *chartYear;
+    QChartView *chartViewYear;
+    QBarSeries *seriesYear;
+
+    QChart *chartMonth;
+    QChartView *chartViewMonth;
+    QLineSeries *seriesMonth;
+
     QValueAxis *axisX;
     QValueAxis *axisY;
+
+    QValueAxis *axisX_year;
+    QValueAxis *axisY_year;
+
+    QValueAxis *axisX_month;
+    QValueAxis *axisY_month;
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -33,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::AirportName, PlotWindow, &AirportsLoadWindow::ReceiveAirportName);
 
+    connect(this, &MainWindow::YearStatsReady, PlotWindow, &AirportsLoadWindow::ReceiveYearStats);
+
+    connect(this, &MainWindow::PerDayStatsReady, PlotWindow, &AirportsLoadWindow::ReceivePerDayStats);
+
     connectToDatabase();
 }
 
@@ -164,8 +168,10 @@ void MainWindow::on_pb_requestStats_clicked()
         }
         PerDayStats->appendRow(rowItems);
     }
-    //ui->tv_AirPortsTable->setModel(PerDayStats);
+    ui->tv_AirPortsTable->setModel(PerDayStats);
     emit AirportName(ui->cb_AirportsList->currentText());
+    emit YearStatsReady(YearStats);
+    emit PerDayStatsReady(PerDayStats);
     PlotWindow->show();
     setDisabled(true);
 
