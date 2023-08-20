@@ -29,8 +29,8 @@
    <widget class="QTableView" name="tv_AirPortsTable">
     <property name="geometry">
      <rect>
-      <x>6</x>
-      <y>6</y>
+      <x>30</x>
+      <y>10</y>
       <width>400</width>
       <height>690</height>
      </rect>
@@ -70,7 +70,7 @@
      </size>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string/>
     </property>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
@@ -216,7 +216,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
       <rect>
        <x>10</x>
        <y>31</y>
-       <width>92</width>
+       <width>221</width>
        <height>16</height>
       </rect>
      </property>

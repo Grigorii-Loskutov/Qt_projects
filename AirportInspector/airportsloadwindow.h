@@ -47,6 +47,8 @@ private:
     QValueAxis *axisX_month;
     QValueAxis *axisY_month;
 
+
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 };
