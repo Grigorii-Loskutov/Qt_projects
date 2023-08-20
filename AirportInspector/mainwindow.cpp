@@ -108,7 +108,7 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
         }
     }
     else{
-        ui->centralwidget->setEnabled(true);
+        ui->centralwidget->setEnabled(false);
         dataBase->DisconnectFromDataBase(DB_NAME);
         msg->setIcon(QMessageBox::Critical);
         msg->setText(dataBase->GetLastError().text());
