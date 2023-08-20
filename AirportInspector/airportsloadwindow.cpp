@@ -36,8 +36,9 @@ AirportsLoadWindow::AirportsLoadWindow(QWidget *parent) :
     ui->tab_month->setLayout(layoutMonth);
     ui->tab_year->setLayout(layoutYear);
 
-    chartViewYear->show();
     chartViewMonth->show();
+    chartViewYear->show();
+
 
     for(int monthIter = 0; monthIter < 12; ++monthIter){
         QString month;
@@ -83,6 +84,7 @@ AirportsLoadWindow::AirportsLoadWindow(QWidget *parent) :
         }
         ui->cb_monthSelect->addItem(QString(month).arg(monthIter));
     }
+    PerDayStatsAllMonthReceived = false;
 
 
 
@@ -105,6 +107,7 @@ void AirportsLoadWindow::on_pb_close_clicked()
 
 void  AirportsLoadWindow::closeEvent(QCloseEvent *event)
 {
+    ui->cb_monthSelect->setCurrentIndex(0);
     emit destroyed();
 }
 
@@ -158,9 +161,72 @@ void AirportsLoadWindow::ReceiveYearStats(QStandardItemModel* YearStats)
 }
 void AirportsLoadWindow::ReceivePerDayStats(QStandardItemModel* PerDayStats)
 {
-    NULL;
+    PerDayStatsAllMonth = PerDayStats;
+    PerDayStatsAllMonthReceived = true;
+    AirportsLoadWindow::plotPerDayStats();
 }
+
+void AirportsLoadWindow::plotPerDayStats()
+{
+    seriesMonth->clear();
+    int rangeYmax = 0;
+    int rangeYmin = 0;
+    int dayCount = 0;
+    int monthIndex = ui->cb_monthSelect->currentIndex() + 1;
+    for (int row = 0; row < PerDayStatsAllMonth->rowCount(); ++row) {
+
+        QModelIndex index_val = PerDayStatsAllMonth->index(row, 0);
+        QModelIndex index_month = PerDayStatsAllMonth->index(row, 1);
+
+        QVariant data = PerDayStatsAllMonth->data(index_val);
+        int value = data.toInt();
+        rangeYmin = value;
+        if (value > rangeYmax) {
+            rangeYmax = value;
+        }
+        if (value < rangeYmin) {
+            rangeYmin = value;
+        }
+        QVariant QVarDate = PerDayStatsAllMonth->data(index_month);
+        QDateTime dateTime = QVarDate.toDateTime();
+        QDate date = dateTime.date();
+        int month = date.month();
+        //int year = date.year();
+
+        if (month == monthIndex)
+        {
+            dayCount++;
+            seriesMonth->append(dayCount, value);
+        }
+    }
+    axisX_month = new QValueAxis(this);
+    axisY_month = new QValueAxis(this);
+
+    axisX_month->setRange(1, dayCount);
+    //axisX_month->setTickCount(dayCount - 1);
+    axisX_month->setTitleText("День месяца");
+    axisX_month->setLabelFormat("%d"); // Формат отображения меток оси X
+
+    axisY_month->setRange(rangeYmin, rangeYmax);
+    //axisY_month->setTickCount(rangeYmax - rangeYmin);
+    axisY_month->setTitleText("Количество рейсов");
+
+    chartMonth->addAxis(axisX_month, Qt::AlignBottom);
+    chartMonth->addAxis(axisY_month, Qt::AlignLeft);
+    seriesMonth->attachAxis(axisX_month);
+    seriesMonth->attachAxis(axisY_month);
+    chartMonth->createDefaultAxes();
+}
+
 void AirportsLoadWindow::ReceiveAirportName(QString AirportName)
 {
     ui->tl_AirportName->setText("Статистика вылетов и прилетов для аэропорта: " + AirportName);
 }
+
+void AirportsLoadWindow::on_cb_monthSelect_currentIndexChanged(int index)
+{
+    if (PerDayStatsAllMonthReceived == true) {
+        AirportsLoadWindow::plotPerDayStats();
+    }
+}
+

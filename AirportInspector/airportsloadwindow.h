@@ -22,6 +22,8 @@ signals:
 private slots:
     void on_pb_close_clicked();
 
+    void on_cb_monthSelect_currentIndexChanged(int index);
+
 public slots:
     void ReceiveYearStats(QStandardItemModel* YearStats);
     void ReceivePerDayStats(QStandardItemModel* PerDayStats);
@@ -47,7 +49,11 @@ private:
     QValueAxis *axisX_month;
     QValueAxis *axisY_month;
 
+    QStandardItemModel* PerDayStatsAllMonth;
 
+    bool PerDayStatsAllMonthReceived;
+
+    void plotPerDayStats();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

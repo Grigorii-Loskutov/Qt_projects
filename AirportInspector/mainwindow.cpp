@@ -168,7 +168,7 @@ void MainWindow::on_pb_requestStats_clicked()
         }
         PerDayStats->appendRow(rowItems);
     }
-    ui->tv_AirPortsTable->setModel(PerDayStats);
+    //ui->tv_AirPortsTable->setModel(PerDayStats);
     emit AirportName(ui->cb_AirportsList->currentText());
     emit YearStatsReady(YearStats);
     emit PerDayStatsReady(PerDayStats);
