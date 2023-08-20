@@ -156,6 +156,7 @@ void AirportsLoadWindow::ReceiveYearStats(QStandardItemModel* YearStats)
    chartYear->addAxis(axisY_year, Qt::AlignLeft);
    seriesYear->attachAxis(axisX_year);
    seriesYear->attachAxis(axisY_year);
+   chartViewYear->update();
    chartYear->createDefaultAxes();
 
 }
@@ -180,7 +181,7 @@ void AirportsLoadWindow::plotPerDayStats()
 
         QVariant data = PerDayStatsAllMonth->data(index_val);
         int value = data.toInt();
-        qDebug() << value;
+        //qDebug() << value;
         rangeYmin = value;
         if (value > rangeYmax) {
             rangeYmax = value;
@@ -204,17 +205,18 @@ void AirportsLoadWindow::plotPerDayStats()
 
     axisX_month->setRange(1, dayCount);
     //axisX_month->setTickCount(dayCount - 1);
-    axisX_month->setTitleText("День месяца");
+    axisX_month->setTitleText("День месяца"); //Не видно...
     //axisX_month->setLabelFormat("%d"); // Формат отображения меток оси X
 
     axisY_month->setRange(std::round(rangeYmin * 0.9), std::round(rangeYmax * 1.05));
     //axisY_month->setTickCount(rangeYmax - rangeYmin);
-    axisY_month->setTitleText("Количество рейсов");
+    axisY_month->setTitleText("Количество рейсов"); //Не видно...
 
     chartMonth->addAxis(axisX_month, Qt::AlignBottom);
     chartMonth->addAxis(axisY_month, Qt::AlignLeft);
     seriesMonth->attachAxis(axisX_month);
     seriesMonth->attachAxis(axisY_month);
+    chartViewMonth->update();
     chartMonth->createDefaultAxes();
 }
 
