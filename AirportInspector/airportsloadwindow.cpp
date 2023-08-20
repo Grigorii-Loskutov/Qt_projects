@@ -180,6 +180,7 @@ void AirportsLoadWindow::plotPerDayStats()
 
         QVariant data = PerDayStatsAllMonth->data(index_val);
         int value = data.toInt();
+        qDebug() << value;
         rangeYmin = value;
         if (value > rangeYmax) {
             rangeYmax = value;
@@ -191,7 +192,6 @@ void AirportsLoadWindow::plotPerDayStats()
         QDateTime dateTime = QVarDate.toDateTime();
         QDate date = dateTime.date();
         int month = date.month();
-        //int year = date.year();
 
         if (month == monthIndex)
         {
@@ -205,9 +205,9 @@ void AirportsLoadWindow::plotPerDayStats()
     axisX_month->setRange(1, dayCount);
     //axisX_month->setTickCount(dayCount - 1);
     axisX_month->setTitleText("День месяца");
-    axisX_month->setLabelFormat("%d"); // Формат отображения меток оси X
+    //axisX_month->setLabelFormat("%d"); // Формат отображения меток оси X
 
-    axisY_month->setRange(rangeYmin, rangeYmax);
+    axisY_month->setRange(std::round(rangeYmin * 0.9), std::round(rangeYmax * 1.05));
     //axisY_month->setTickCount(rangeYmax - rangeYmin);
     axisY_month->setTitleText("Количество рейсов");
 

@@ -127,6 +127,8 @@ void MainWindow::ReceiveStatusConnectionToDB(bool status)
 
 void MainWindow::on_pb_requestStats_clicked()
 {
+    setDisabled(true);
+    PlotWindow->show();
     QString keyToSearch = ui->cb_AirportsList->currentText();
     if (airportMap.contains(keyToSearch)) {
         QString airportName = airportMap.value(keyToSearch);
@@ -172,9 +174,6 @@ void MainWindow::on_pb_requestStats_clicked()
     emit AirportName(ui->cb_AirportsList->currentText());
     emit YearStatsReady(YearStats);
     emit PerDayStatsReady(PerDayStats);
-    PlotWindow->show();
-    setDisabled(true);
-
 }
 
 
