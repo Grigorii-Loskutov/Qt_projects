@@ -93,8 +93,8 @@ AirportsLoadWindow::AirportsLoadWindow(QWidget *parent) :
 AirportsLoadWindow::~AirportsLoadWindow()
 {
     delete chartYear;
-    delete chartViewYear;
-    delete chartMonth;
+    //delete chartViewYear;
+    //delete chartViewMonth;
     delete chartMonth;
     delete ui;
 }
@@ -208,7 +208,7 @@ void AirportsLoadWindow::plotPerDayStats()
     axisX_month->setTitleText("День месяца"); //Не видно...
     //axisX_month->setLabelFormat("%d"); // Формат отображения меток оси X
 
-    axisY_month->setRange(std::round(rangeYmin * 0.9), std::round(rangeYmax * 1.05));
+    axisY_month->setRange(std::round(rangeYmin * 0.9 - 1), 1 + std::round(rangeYmax * 1.05));
     //axisY_month->setTickCount(rangeYmax - rangeYmin);
     axisY_month->setTitleText("Количество рейсов"); //Не видно...
 

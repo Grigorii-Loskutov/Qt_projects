@@ -48,7 +48,6 @@ void DataBase::ConnectToDataBase(QVector<QString> data)
     dataBase->setPort(5432);
 
 
-    ///Тут должен быть код ДЗ
 
 
     bool status;
@@ -79,8 +78,8 @@ QSqlQueryModel* DataBase::RequestToDB(const QString request)
 {
 
     queryModel->setQuery(request, *dataBase);
-    qDebug() << queryModel->lastError();
-    qDebug() << queryModel->query().lastQuery();
+    //qDebug() << queryModel->lastError();
+    //qDebug() << queryModel->query().lastQuery();
     return queryModel;
 
 }

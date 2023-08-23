@@ -48,7 +48,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::PlotWindowDestroyed()
 {
-    qDebug() << "PlotWindow destr.";
+    //qDebug() << "PlotWindow destr.";
     setDisabled(false);
 }
 
@@ -133,9 +133,9 @@ void MainWindow::on_pb_requestStats_clicked()
     if (airportMap.contains(keyToSearch)) {
         QString airportName = airportMap.value(keyToSearch);
         //ui->tl_AirportCode->setText(airportName);
-        qDebug() << "Airport name for code" << keyToSearch << "is" << airportName;
+        //qDebug() << "Airport name for code" << keyToSearch << "is" << airportName;
     } else {
-        qDebug() << "Airport code" << keyToSearch << "not found in the map.";
+        //qDebug() << "Airport code" << keyToSearch << "not found in the map.";
     }
     QString airportCode = airportMap.value(keyToSearch);
     request = YearStats_req + "'" + airportCode + "'" +" or arrival_airport = '" + airportCode +"') " + "group by \"Month\"";
@@ -197,9 +197,9 @@ void MainWindow::on_pb_request_shedule_clicked()
     QString airportCode = airportMap.value(keyToSearch);
     if (airportMap.contains(keyToSearch)) {
         //ui->tl_AirportCode->setText(airportName);
-        qDebug() << "Airport name for code" << keyToSearch << "is" << airportCode;
+        //qDebug() << "Airport name for code" << keyToSearch << "is" << airportCode;
     } else {
-        qDebug() << "Airport code" << keyToSearch << "not found in the map.";
+        //qDebug() << "Airport code" << keyToSearch << "not found in the map.";
     }
     if (ui->rb_arrival->isChecked() == true){
         request = ArrivalPlains_req + "where f.arrival_airport  = " + "'" +  airportCode + "' "
